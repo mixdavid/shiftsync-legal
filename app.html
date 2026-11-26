@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShiftSync - Fasting & sleep for shift work</title>
+<meta name="description" content="ShiftSync turns your rotating roster into fasting windows and sleep plans that respect your body clock. Built for nurses, medics, and night-shift crews. Private by design.">
+<meta property="og:title" content="ShiftSync - Fasting & sleep for shift work">
+<meta property="og:description" content="Your roster changes every week. Your body clock doesn't have to suffer.">
+<meta property="og:image" content="assets/app-icon.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0F172A">
+<link rel="icon" type="image/png" href="assets/app-icon.png">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<style>
+  /* ShiftSync brand tokens, mirrored from App/Theme.swift */
+  :root {
+    --ink: #0F172A;
+    --ink-elevated: #1E293B;
+    --amber: #F59E0B;
+    --sky: #38BDF8;
+    --text: #E2E8F0;
+    --text-dim: #94A3B8;
+    --hairline: rgba(148, 163, 184, 0.16);
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--sky); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  img { display: block; max-width: 100%; }
+
+  /* Nav: single line, 68px */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18px; color: var(--text); }
+  .brand:hover { text-decoration: none; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 15px; }
+  .nav-links a { color: var(--text-dim); }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+  .btn {
+    display: inline-block;
+    background: var(--amber); color: #0F172A;
+    font-weight: 700; font-size: 16px;
+    padding: 12px 26px; border-radius: 999px;
+    white-space: nowrap;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn:hover { text-decoration: none; transform: translateY(-2px); }
+  .btn:active { transform: scale(0.98); }
+  .btn-sm { padding: 8px 18px; font-size: 14px; }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--hairline);
+  }
+
+  /* Hero: asymmetric split */
+  .hero { padding: 72px 0 88px; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.15fr 0.85fr;
+    gap: 56px; align-items: center;
+  }
+  .eyebrow {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 18px;
+  }
+  h1 {
+    font-size: clamp(38px, 5.2vw, 60px);
+    font-weight: 900; line-height: 1.06; letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  h1 em { font-style: italic; color: var(--amber); padding-bottom: 2px; }
+  .hero p.sub {
+    font-size: 19px; color: var(--text-dim); max-width: 46ch; margin-bottom: 32px;
+  }
+  .hero-ctas { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .hero-visual { position: relative; }
+  .hero-visual img.phone {
+    width: 100%; max-width: 320px; margin: 0 auto;
+    border-radius: 28px;
+    border: 1px solid var(--hairline);
+    box-shadow: 0 32px 80px rgba(2, 6, 23, 0.6);
+  }
+  /* Missing-asset fallback: keeps layout stable until real screenshots are dropped in */
+  img.missing {
+    aspect-ratio: 1320 / 2868; object-fit: cover;
+    border: 1px dashed var(--hairline) !important;
+    background: var(--ink-elevated);
+    color: transparent; /* hide broken-image alt text overflow */
+  }
+
+  /* Audience strip under hero */
+  .audience {
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    padding: 22px 0;
+  }
+  .audience-inner {
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    color: var(--text-dim); font-size: 15px; font-weight: 500;
+  }
+  .audience-inner span strong { color: var(--text); font-weight: 700; }
+
+  section { padding: 88px 0; }
+  h2 {
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 900; letter-spacing: -0.02em; line-height: 1.12;
+    margin-bottom: 16px;
+  }
+  .section-sub { color: var(--text-dim); font-size: 17px; max-width: 62ch; margin-bottom: 48px; }
+
+  /* Problem: manifesto block, full width */
+  .problem { background: var(--ink-elevated); border-radius: var(--radius); padding: 56px; }
+  .problem p.big {
+    font-size: clamp(22px, 2.6vw, 30px); font-weight: 700; line-height: 1.35;
+    letter-spacing: -0.01em; max-width: 30ch;
+  }
+  .problem p.big span { color: var(--sky); }
+  .problem p.after { color: var(--text-dim); margin-top: 20px; max-width: 58ch; }
+
+  /* How it works: numbered vertical steps with hairlines */
+  .steps { display: grid; gap: 0; }
+  .step {
+    display: grid; grid-template-columns: 88px 1fr; gap: 24px;
+    padding: 32px 0; border-bottom: 1px solid var(--hairline);
+    align-items: start;
+  }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    font-size: 44px; font-weight: 900; color: var(--amber); line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .step h3 { font-size: 21px; font-weight: 700; margin-bottom: 6px; }
+  .step p { color: var(--text-dim); max-width: 60ch; }
+
+  /* Screens: horizontal scroll-snap gallery */
+  .gallery {
+    display: grid; grid-auto-flow: column; grid-auto-columns: min(260px, 70vw);
+    gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding-bottom: 16px;
+  }
+  .gallery figure { scroll-snap-align: start; }
+  .gallery img {
+    border-radius: 24px; border: 1px solid var(--hairline); width: 100%;
+  }
+  .gallery figcaption { margin-top: 12px; font-size: 14px; color: var(--text-dim); }
+
+  /* Privacy: split with icon */
+  .privacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .privacy-list { list-style: none; display: grid; gap: 14px; }
+  .privacy-list li { display: flex; gap: 12px; align-items: baseline; color: var(--text-dim); }
+  .privacy-list li strong { color: var(--text); }
+  .privacy-list .tick { color: var(--sky); font-weight: 900; }
+
+  /* Pricing: two asymmetric cards */
+  .plans { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
+  .plan {
+    background: var(--ink-elevated); border-radius: var(--radius);
+    padding: 36px; border: 1px solid var(--hairline);
+  }
+  .plan.featured { border-color: var(--amber); }
+  .plan .tag { font-size: 13px; font-weight: 700; color: var(--amber); margin-bottom: 10px; }
+  .plan .price { font-size: 44px; font-weight: 900; letter-spacing: -0.02em; }
+  .plan .price small { font-size: 17px; font-weight: 500; color: var(--text-dim); }
+  .plan p { color: var(--text-dim); margin-top: 10px; font-size: 15px; }
+  .fineprint { margin-top: 24px; font-size: 13px; color: var(--text-dim); max-width: 72ch; }
+
+  /* Final CTA */
+  .final { text-align: left; background: var(--ink-elevated); border-radius: var(--radius); padding: 56px; display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .final h2 { margin-bottom: 8px; }
+  .final p { color: var(--text-dim); }
+
+  footer { border-top: 1px solid var(--hairline); padding: 40px 0 56px; }
+  .foot { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 14px; color: var(--text-dim); }
+  .foot-links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .disclaimer { margin-top: 20px; font-size: 12.5px; color: var(--text-dim); max-width: 80ch; }
+
+  /* Scroll reveal, honors reduced motion */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .btn { transition: none; }
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 48px 0 56px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-visual { order: 2; }
+    section { padding: 56px 0; }
+    .problem, .final { padding: 32px 24px; }
+    .privacy-grid { grid-template-columns: 1fr; gap: 32px; }
+    .plans { grid-template-columns: 1fr; }
+    .step { grid-template-columns: 56px 1fr; gap: 16px; }
+    .step .num { font-size: 32px; }
+    .nav-links a.hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <img src="assets/app-icon.png" alt="ShiftSync app icon">
+      ShiftSync
+    </a>
+    <div class="nav-links">
+      <a class="hide-sm" href="#how">How it works</a>
+      <a class="hide-sm" href="#privacy">Privacy</a>
+      <a class="hide-sm" href="#pricing">Pricing</a>
+      <!-- TODO: replace href with the live App Store URL once the app is approved -->
+      <a class="btn btn-sm" href="#pricing">Get the app</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">For night shifts & rotating rosters</div>
+      <h1>Your roster changes weekly. Your <em>body clock</em> adapts.</h1>
+      <p class="sub">ShiftSync turns your shifts into fasting windows and sleep plans that fit the hours you actually work.</p>
+      <div class="hero-ctas">
+        <!-- TODO: replace href with the live App Store URL once approved -->
+        <a class="btn" href="#pricing">Get the app</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Real screenshot goes here. Drop 01_today.png into assets/screen-today.png -->
+      <img class="phone" src="assets/screen-today.png" alt="ShiftSync Today screen showing a live fasting ring built around tonight's shift"
+           onerror="this.classList.add('missing')">
+    </div>
+  </div>
+</header>
+
+<div class="audience">
+  <div class="wrap audience-inner">
+    <span><strong>Nurses</strong> & medics</span>
+    <span><strong>Factory</strong> crews</span>
+    <span><strong>Pilots</strong> & drivers</span>
+    <span><strong>Security</strong> & hospitality</span>
+    <span><strong>Anyone</strong> whose morning starts at 10 PM</span>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="problem reveal">
+      <p class="big">Generic fasting apps assume you sleep at night. <span>You don't.</span></p>
+      <p class="after">Eating at the wrong biological hour is linked to worse sleep and metabolic strain. A 16:8 window that starts at 8 AM is useless when your shift starts at 11 PM. ShiftSync plans against your rotation, not a 9-to-5 clock.</p>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2 class="reveal">Three steps. Then it runs itself.</h2>
+    <p class="section-sub reveal">Set your roster once. ShiftSync translates every shift into a plan for eating, caffeine, and sleep.</p>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="num">1</div>
+        <div>
+          <h3>Paint your roster</h3>
+          <p>Day, night, swing, off. Tap shifts onto a calendar, or set a repeating rotation like 2 days / 2 nights / 4 off and let it fill itself.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="num">2</div>
+        <div>
+          <h3>Get a daily plan</h3>
+          <p>Each shift becomes an eating window, a caffeine cutoff, and a sleep target. After a night block, you get a lighter recovery day instead of a pretend-normal schedule.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="num">3</div>
+        <div>
+          <h3>Run your fast</h3>
+          <p>One tap starts today's fast. A live ring tracks progress, widgets keep it on your Home Screen, and reminders never wake you mid-sleep.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal">Built for the night shift</h2>
+    <p class="section-sub reveal">Every screen is dark-first and glanceable at 3 AM.</p>
+    <div class="gallery reveal">
+      <figure>
+        <img src="assets/screen-today.png" alt="Today screen with live fasting ring"
+             onerror="this.classList.add('missing')">
+        <figcaption>Your fast, built around tonight's shift.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/screen-schedule.png" alt="Roster calendar with color-coded shifts"
+             onerror="this.classList.add('missing')">
+        <figcaption>Paint your roster. We handle the body clock.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/screen-insights.png" alt="Insights charts for adherence and energy"
+             onerror="this.classList.add('missing')">
+        <figcaption>See what nights do to your energy.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/screen-settings.png" alt="Settings screen showing on-device privacy"
+             onerror="this.classList.add('missing')">
+        <figcaption>Private by design. Everything stays on device.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap privacy-grid">
+    <div class="reveal">
+      <h2>Your health routine is nobody's business.</h2>
+      <p class="section-sub" style="margin-bottom:0">ShiftSync is local-first. There is no server holding your sleep and eating data, because there is no server.</p>
+    </div>
+    <ul class="privacy-list reveal">
+      <li><span class="tick">&#10003;</span><span><strong>No account.</strong> Open the app and start.</span></li>
+      <li><span class="tick">&#10003;</span><span><strong>No cloud sync.</strong> Data lives in on-device storage.</span></li>
+      <li><span class="tick">&#10003;</span><span><strong>No ads, no tracking.</strong> Not now, not later.</span></li>
+      <li><span class="tick">&#10003;</span><span><strong>Reminders respect sleep.</strong> Notifications are scheduled around your rest hours.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2 class="reveal">Less than a coffee a month.</h2>
+    <p class="section-sub reveal">Start free. Upgrade to Pro when your roster gets serious.</p>
+    <div class="plans">
+      <div class="plan featured reveal">
+        <div class="tag">Yearly &middot; 3-day free trial</div>
+        <div class="price">$9.99<small> /year</small></div>
+        <p>About $0.19 a week. No payment during the trial. Cancel anytime in your App Store account settings.</p>
+      </div>
+      <div class="plan reveal">
+        <div class="tag" style="color:var(--sky)">Weekly</div>
+        <div class="price">$0.99<small> /week</small></div>
+        <p>Flexible. Cancel anytime.</p>
+      </div>
+    </div>
+    <p class="fineprint">Subscriptions renew automatically unless canceled at least 24 hours before the period ends. Payment is charged to your App Store account. Prices shown in USD and may vary by region.</p>
+    <div style="margin-top:32px">
+      <!-- TODO: replace href with the live App Store URL once approved -->
+      <a class="btn" href="#top">Get the app</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="final reveal">
+      <div>
+        <h2>Work nights? We built this for you.</h2>
+        <p>Questions or feature requests: <a href="mailto:mixmckagan@hotmail.com?subject=ShiftSync%20Feedback">mixmckagan@hotmail.com</a></p>
+      </div>
+      <!-- TODO: replace href with the live App Store URL once approved -->
+      <a class="btn" href="#pricing">Get the app</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span>&copy; 2026 ShiftSync</span>
+      <div class="foot-links">
+        <a href="https://mixdavid.github.io/shiftsync-legal/">Support</a>
+        <a href="https://mixdavid.github.io/shiftsync-legal/terms">Terms of Use</a>
+        <a href="https://mixdavid.github.io/shiftsync-legal/privacy">Privacy Policy</a>
+        <a href="mailto:mixmckagan@hotmail.com?subject=ShiftSync%20Support">Contact</a>
+      </div>
+    </div>
+    <p class="disclaimer">ShiftSync is a lifestyle wellness companion and does not provide medical advice. If you have a medical condition, talk to your clinician before changing your eating or sleep routine.</p>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal via IntersectionObserver (no scroll listeners).
+  (function () {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var els = document.querySelectorAll(".reveal");
+    if (reduce || !("IntersectionObserver" in window)) {
+      els.forEach(function (el) { el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
+</body>
+</html>
